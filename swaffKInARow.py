@@ -16,8 +16,8 @@ OPPONENT_NICKNAME = 'Not yet known'
 OPPONENT_PLAYS = 'O' # Update this after the call to prepare.
 
 # Information about this agent:
-MY_LONG_NAME = 'Samuel Affolder swaff'
-MY_NICKNAME = 'IG@guccishortshorts'
+MY_LONG_NAME = 'IG@guccishortshorts'
+MY_NICKNAME = 'blackethCat'
 I_PLAY = 'X' # Gets updated by call to prepare.
 
 # GAME VERSION INFO
@@ -31,8 +31,8 @@ MOVES_MADE = 0
 ############################################################
 # INTRODUCTION
 def introduce():
-    intro = f'\nMy name is {MY_NICKNAME}.\n'+\
-            f'{MY_LONG_NAME} made me.\n'
+    intro = f'\nMy name is {MY_LONG_NAME}.\n'+\
+            'Samuel Affolder swaff made me.\n'
     return intro
 
 def nickname():
@@ -78,7 +78,7 @@ def makeMove(currentState, currentRemark, timeLimit=10000):
     optScore = None # set the based on min or max player
     if xTurn: optScore = -math.inf
     else: optScore = math.inf
-    bestMove = playableMoves(currentState).pop() # default move is any playable one
+    bestMove = playableMoves(currentState).pop(0) # default move is any playable one
     # as long as I'm good on time and not searching too deep: LETS SEARCH!
     while time.time() - START_TIME < timeLimit and searchDepth < (M * N) - (MOVES_MADE):
         for possMove in playableMoves(currentState):
@@ -178,13 +178,11 @@ def staticEval(state):
                     if board[iTemp][jTemp] == spectator: spectatorOfK += 1
                 # this weighting system only rewards strictly K sized windows with none of other players pieces in it
                 if playerOfK > 0 and spectatorOfK == 0:
-                    if playerOfK >= K - 1: # heavy weighting to 1 away positions
-                        playerScore += 1000
-                    playerScore += playerOfK * 10
+                    if playerOfK >= K - 1: playerScore += playerOfK**10
+                    else: playerScore += 4**playerOfK
                 if spectatorOfK > 0 and playerOfK == 0:
-                    if spectatorScore >= K - 1:
-                        spectatorScore += 1000
-                    spectatorScore += spectatorOfK * 10
+                    if spectatorOfK >= K - 1: spectatorScore += spectatorOfK**10
+                    else: spectatorScore += 4**spectatorOfK
                 playerOfK = 0
                 spectatorOfK = 0
     if player == "X":
@@ -200,11 +198,11 @@ def staticEval(state):
 # Check for empty spots to play
 # Return a set of those available spots
 def playableMoves(state):
-    pMoves = set()
+    pMoves = []
     for i in range(len(state[0])):
         for j in range(len(state[0][0])):
             if state[0][i][j] == " ":
-                pMoves.add((i, j))
+                pMoves.append([i, j])
     return pMoves
 
 # Create a copy of current state and add the move
